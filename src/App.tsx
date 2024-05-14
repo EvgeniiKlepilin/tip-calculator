@@ -9,41 +9,48 @@ import {
   AppBar,
   Toolbar,
   IconButton,
+  Grow,
 } from "@mui/material";
 
 import GitHubIcon from "@mui/icons-material/GitHub";
 
 function App() {
-  const [totalAmount, setTotalAmount] = useState(0);
-  const [percentage25, setPercentage25] = useState(0);
-  const [percentage20, setPercentage20] = useState(0);
-  const [percentage15, setPercentage15] = useState(0);
-  const [percentage10, setPercentage10] = useState(0);
 
-  const [customPercentage, setCustomPercentage] = useState(5);
-  const [percentageCustom, setPercentageCustom] = useState(0);
+  const [totalAmount, setTotalAmount] = useState("");
+  const [percentage25, setPercentage25] = useState("");
+  const [percentage20, setPercentage20] = useState("");
+  const [percentage15, setPercentage15] = useState("");
+  const [percentage10, setPercentage10] = useState("");
+
+  const [customPercentage, setCustomPercentage] = useState("5");
+  const [percentageCustom, setPercentageCustom] = useState("");
 
   const handleTotalAmountOnChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const amount = Number(event.target.value);
+    const amount = event.target.value;
     setTotalAmount(amount);
-    setPercentage25(Number((amount * 0.25).toFixed(2)));
-    setPercentage20(Number((amount * 0.2).toFixed(2)));
-    setPercentage15(Number((amount * 0.15).toFixed(2)));
-    setPercentage10(Number((amount * 0.1).toFixed(2)));
-    setPercentageCustom(Number(((amount * customPercentage) / 100).toFixed(2)));
+    setPercentage25(getPercentageResult(amount, 0.25));
+    setPercentage20(getPercentageResult(amount, 0.2));
+    setPercentage15(getPercentageResult(amount, 0.15));
+    setPercentage10(getPercentageResult(amount, 0.1));
+    setPercentageCustom(
+      getPercentageResult(amount, Number(customPercentage) / 100)
+    );
   };
 
   const handleCustomPercentageOnChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const percentage = Number(event.target.value);
+    const percentage = event.target.value;
     setCustomPercentage(percentage);
     setPercentageCustom(
-      Number(((totalAmount * customPercentage) / 100).toFixed(2))
+      getPercentageResult(totalAmount, Number(percentage) / 100)
     );
   };
+
+  const getPercentageResult = (amount: string, percentage: number) =>
+    (Number(amount) * percentage).toFixed(2);
 
   return (
     <Box>
@@ -75,8 +82,9 @@ function App() {
             <Stack spacing={2}>
               <TextField
                 variant="outlined"
-                type="tel"
+                type="text"
                 value={totalAmount}
+                inputMode="numeric"
                 label="Total Amount"
                 onChange={handleTotalAmountOnChange}
               />
