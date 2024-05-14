@@ -9,7 +9,6 @@ import {
   AppBar,
   Toolbar,
   IconButton,
-  Grow,
 } from "@mui/material";
 
 import GitHubIcon from "@mui/icons-material/GitHub";
