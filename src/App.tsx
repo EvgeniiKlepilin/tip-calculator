@@ -9,13 +9,65 @@ import {
   AppBar,
   Toolbar,
   IconButton,
+  OutlinedInput,
+  InputAdornment,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 
 import GitHubIcon from "@mui/icons-material/GitHub";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+
+const CopyIcon = (props: { value: string }) => {
+  const handleCopyOnClick = () => {
+    navigator.clipboard.writeText(props.value);
+  };
+  return (
+    <InputAdornment position="end">
+      <IconButton
+        aria-label="copy content"
+        onClick={handleCopyOnClick}
+        edge="end"
+      >
+        <ContentCopyIcon />
+      </IconButton>
+    </InputAdornment>
+  );
+};
+
+interface PercentageFieldProps {
+  label: string;
+  value: string;
+  style?: React.CSSProperties;
+  onClick?: () => void;
+  isSelected?: boolean;
+}
+
+const PercentageField = (props: PercentageFieldProps) => {
+  const { label, value, style, onClick, isSelected } = props;
+  return (
+    <FormControl>
+      <InputLabel>{label}</InputLabel>
+      <OutlinedInput
+        type="text"
+        value={value}
+        label={label}
+        endAdornment={
+          <InputAdornment position="end">
+            <CopyIcon value={value} />
+          </InputAdornment>
+        }
+        readOnly
+        sx={{...style }}
+        onClick={onClick}
+      />
+    </FormControl>
+  );
+};
 
 function App() {
-
   const [totalAmount, setTotalAmount] = useState("");
+
   const [percentage25, setPercentage25] = useState("");
   const [percentage20, setPercentage20] = useState("");
   const [percentage15, setPercentage15] = useState("");
@@ -23,6 +75,13 @@ function App() {
 
   const [customPercentage, setCustomPercentage] = useState("5");
   const [percentageCustom, setPercentageCustom] = useState("");
+
+  const [isPercentage25Selected, setIsPercentage25Selected] = useState(false);
+  const [isPercentage20Selected, setIsPercentage20Selected] = useState(false);
+  const [isPercentage15Selected, setIsPercentage15Selected] = useState(false);
+  const [isPercentage10Selected, setIsPercentage10Selected] = useState(false);
+  const [isPercentageCustomSelected, setIsPercentageCustomSelected] =
+    useState(false);
 
   const handleTotalAmountOnChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -48,8 +107,61 @@ function App() {
     );
   };
 
+  const getSelectedPercentage = () => {
+    if (isPercentage25Selected) {
+      return percentage25;
+    }
+    if (isPercentage20Selected) {
+      return percentage20;
+    }
+    if (isPercentage15Selected) {
+      return percentage15;
+    }
+    if (isPercentage10Selected) {
+      return percentage10;
+    }
+    if (isPercentageCustomSelected) {
+      return percentageCustom;
+    }
+    return "0";
+  };
+
+  const selectPercentage = (percentage: string) => {
+    deselectAllPercentages();
+    switch (percentage) {
+      case "25":
+        setIsPercentage25Selected(true);
+        break;
+      case "20":
+        setIsPercentage20Selected(true);
+        break;
+      case "15":
+        setIsPercentage15Selected(true);
+        break;
+      case "10":
+        setIsPercentage10Selected(true);
+        break;
+      case "Custom":
+        setIsPercentageCustomSelected(true);
+        break;
+    }
+    return;
+  };
+
+  const deselectAllPercentages = () => {
+    setIsPercentage25Selected(false);
+    setIsPercentage20Selected(false);
+    setIsPercentage15Selected(false);
+    setIsPercentage10Selected(false);
+    setIsPercentageCustomSelected(false);
+  };
+
   const getPercentageResult = (amount: string, percentage: number) =>
     (Number(amount) * percentage).toFixed(2);
+
+  const totalAmountWithTip = !!totalAmount
+    ? (Number(totalAmount) + Number(getSelectedPercentage())).toFixed(2)
+    : "";
 
   return (
     <Box>
@@ -79,63 +191,60 @@ function App() {
               Tip Calculator
             </Typography>
             <Stack spacing={2}>
-              <TextField
-                variant="outlined"
-                type="text"
-                value={totalAmount}
-                inputMode="numeric"
-                label="Total Amount"
-                onChange={handleTotalAmountOnChange}
-              />
-              <TextField
-                variant="outlined"
-                value={percentage25}
+              <Stack spacing={2} direction="row">
+                <TextField
+                  variant="outlined"
+                  type="text"
+                  value={totalAmount}
+                  label="Total Amount"
+                  onChange={handleTotalAmountOnChange}
+                  sx={{ flex: 1 }}
+                />
+                <PercentageField
+                  label="Total Amount with Tip"
+                  value={totalAmountWithTip}
+                  style={{ flex: 1 }}
+                />
+              </Stack>
+              <PercentageField
                 label="25%"
-                InputProps={{
-                  readOnly: true,
-                }}
+                value={percentage25}
+                onClick={() => selectPercentage("25")}
+                isSelected={isPercentage25Selected}
               />
-              <TextField
-                variant="outlined"
-                value={percentage20}
+              <PercentageField
                 label="20%"
-                InputProps={{
-                  readOnly: true,
-                }}
+                value={percentage20}
+                onClick={() => selectPercentage("20")}
+                isSelected={isPercentage20Selected}
               />
-              <TextField
-                variant="outlined"
-                value={percentage15}
+              <PercentageField
                 label="15%"
-                InputProps={{
-                  readOnly: true,
-                }}
+                value={percentage15}
+                onClick={() => selectPercentage("15")}
+                isSelected={isPercentage15Selected}
               />
-              <TextField
-                variant="outlined"
-                value={percentage10}
+              <PercentageField
                 label="10%"
-                InputProps={{
-                  readOnly: true,
-                }}
+                value={percentage10}
+                onClick={() => selectPercentage("10")}
+                isSelected={isPercentage10Selected}
               />
               <Stack spacing={2} direction="row">
                 <TextField
                   variant="outlined"
-                  type="tel"
+                  type="text"
                   value={customPercentage}
                   label="Custom %"
                   onChange={handleCustomPercentageOnChange}
                   sx={{ flex: 1 }}
                 />
-                <TextField
-                  variant="outlined"
-                  value={percentageCustom}
+                <PercentageField
                   label={`${customPercentage}%`}
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                  sx={{ flex: 1 }}
+                  value={percentageCustom}
+                  onClick={() => selectPercentage("Custom")}
+                  isSelected={isPercentageCustomSelected}
+                  style={{ flex: 1 }}
                 />
               </Stack>
             </Stack>
