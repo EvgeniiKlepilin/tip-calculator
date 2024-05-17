@@ -18,6 +18,29 @@ import {
 import GitHubIcon from "@mui/icons-material/GitHub";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 
+interface AmountFieldProps {
+  label: string;
+  value: string;
+  style?: React.CSSProperties;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+const AmountField = (props: AmountFieldProps) => {
+  const { label, value, style, onChange } = props;
+  return (
+    <FormControl sx={{ flex: 1 }}>
+      <InputLabel>{label}</InputLabel>
+      <OutlinedInput
+        type="text"
+        value={value}
+        label={label}
+        sx={style}
+        onChange={onChange}
+      />
+    </FormControl>
+  );
+};
+
 const CopyIcon = (props: { value: string }) => {
   const handleCopyOnClick = () => {
     navigator.clipboard.writeText(props.value);
@@ -46,7 +69,7 @@ interface PercentageFieldProps {
 const PercentageField = (props: PercentageFieldProps) => {
   const { label, value, style, onClick, isSelected } = props;
   return (
-    <FormControl>
+    <FormControl sx={{ flex: 1 }}>
       <InputLabel>{label}</InputLabel>
       <OutlinedInput
         type="text"
@@ -58,7 +81,10 @@ const PercentageField = (props: PercentageFieldProps) => {
           </InputAdornment>
         }
         readOnly
-        sx={{...style }}
+        sx={{
+          ...style,
+          backgroundColor: isSelected ? "rgba(25, 118, 210, 0.25)" : "white",
+        }}
         onClick={onClick}
       />
     </FormControl>
@@ -192,18 +218,14 @@ function App() {
             </Typography>
             <Stack spacing={2}>
               <Stack spacing={2} direction="row">
-                <TextField
-                  variant="outlined"
-                  type="text"
-                  value={totalAmount}
+                <AmountField
                   label="Total Amount"
+                  value={totalAmount}
                   onChange={handleTotalAmountOnChange}
-                  sx={{ flex: 1 }}
                 />
                 <PercentageField
                   label="Total Amount with Tip"
                   value={totalAmountWithTip}
-                  style={{ flex: 1 }}
                 />
               </Stack>
               <PercentageField
@@ -231,20 +253,16 @@ function App() {
                 isSelected={isPercentage10Selected}
               />
               <Stack spacing={2} direction="row">
-                <TextField
-                  variant="outlined"
-                  type="text"
-                  value={customPercentage}
+               <AmountField
                   label="Custom %"
+                  value={customPercentage}
                   onChange={handleCustomPercentageOnChange}
-                  sx={{ flex: 1 }}
-                />
+                /> 
                 <PercentageField
                   label={`${customPercentage}%`}
                   value={percentageCustom}
                   onClick={() => selectPercentage("Custom")}
                   isSelected={isPercentageCustomSelected}
-                  style={{ flex: 1 }}
                 />
               </Stack>
             </Stack>
